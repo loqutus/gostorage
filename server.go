@@ -40,6 +40,9 @@ func upload_handler(w http.ResponseWriter, r *http.Request){
 
 }
 
+func download_handler(w http.ResponseWriter, r *http.Request){
+
+}
 func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hi. This is storage")

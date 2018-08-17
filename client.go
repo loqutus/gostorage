@@ -51,7 +51,7 @@ func upload(server *string, port *string, filename *string) error {
 		fmt.Println("")
 		return err
 	}
-	fmt.Println(message)
+	fmt.Println(string(message))
 	return nil
 }
 
