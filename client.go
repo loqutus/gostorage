@@ -31,10 +31,10 @@ func download(server *string, port *string, filename *string) error {
 }
 
 func upload(server *string, port *string, filename *string) error {
-	if _, err := os.Stat(filename); os.IsNotExist(err) {
+	if _, err := os.Stat(*filename); os.IsNotExist(err) {
 		return errors.New("file does no exist")
 	}
-	file, err := os.Open(filename)
+	file, err := os.Open(*filename)
 	if err != nil {
 		fmt.Println("file open error")
 		return err
