@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"fmt"
+	"strings"
 )
 
 func save_file(name string, content []byte) error {
@@ -25,10 +26,25 @@ func read_file(name string) ([]byte, error) {
 	return data, nil
 }
 
+func upload_handler(w http.ResponseWriter, r *http.Request){
+	if r.Method == "POST"{
+		r.ParseMultipartForm(32 << 20)
+		file, header, err := r.FormFile("file")
+    		if err != nil {
+        	log.Fatal(err)
+		}
+		defer file.Close()
+		name := strings.Split(header.Filename, ".")
+
+	}
+
+}
+
 func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hi. This is storage")
 	})
-
+	http.HandleFunc("/upload", upload_handler)
+	http.HandleFunc("/download", download_handler)
 	http.ListenAndServe(":8888", nil)
 }
