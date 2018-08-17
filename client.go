@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"io"
 	"errors"
+	"io/ioutil"
 )
 
 func download(server *string, port *string, filename *string) error {
@@ -21,7 +22,7 @@ func download(server *string, port *string, filename *string) error {
 	defer resp.Body.Close()
 	out, err := os.Create(*filename)
 	if err != nil {
-		fmt.Println("file write error")
+		fmt.Println("file create error")
 		return err
 	}
 	defer out.Close()
@@ -30,7 +31,28 @@ func download(server *string, port *string, filename *string) error {
 }
 
 func upload(server *string, port *string, filename *string) error {
-	
+	if _, err := os.Stat(filename); os.IsNotExist(err) {
+		return errors.New("file does no exist")
+	}
+	file, err := os.Open(filename)
+	if err != nil {
+		fmt.Println("file open error")
+		return err
+	}
+	defer file.Close()
+	res, err := http.Post("http://"+*server+":"+*port+"/upload/"+*filename, "binary/octet-stream", file)
+	if err != nil {
+		fmt.Println("post error")
+		return err
+	}
+	defer res.Body.Close()
+	message, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		fmt.Println("")
+		return err
+	}
+	fmt.Println(message)
+	return nil
 }
 
 func main() {
@@ -52,7 +74,14 @@ func main() {
 	}
 	if *action == "download" {
 		err := download(server, port, file)
-		if err == nil {
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	}
+	if *action == "upload" {
+		err := upload(server, port, file)
+		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
